@@ -52,7 +52,7 @@ Core3 = {
 	ORB = "",
 	ORBPort = 44419,
 
-	DBHost = "127.0.0.1",
+	DBHost = "db",
 	DBPort = 3306,
 	DBName = "swgemu",
 	DBUser = "swgemu",
@@ -65,7 +65,7 @@ Core3 = {
 	LoginAllowedConnections = 3000,
 	LoginRequiredVersion = "20050408-18:00",
 
-	MantisHost = "127.0.0.1",
+	MantisHost = "db",
 	MantisPort = 3306,
 	MantisName = "swgemu",
 	MantisUser = "swgemu",
@@ -140,7 +140,7 @@ Core3 = {
 
 
 	-- Where tre files are stored
-	TrePath = "/home/swgemu/Desktop/SWGEmu",
+	TrePath = "/trefiles",
 
 	-- Each tre file (order is important!)
 	TreFiles = {

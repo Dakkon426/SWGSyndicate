@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  swgemu:
+    build:
+      context: .
+      dockerfile: Dockerfile.swgemu
+    volumes:
+      - ../:/build/SWGSyndicate
+      - ~/swgstuff/trefiles:/trefiles
+    working_dir: /build/SWGSyndicate/MMOCoreORB
+    ports:
+      - "44455:44455"  # STATUSPORT
+      - "44453:44453/udp"  # LOGINPORT
+      - "44462:44462/udp"  # PINGPORT
+      - "44463:44463/udp"  # ZONESERVERPORT
+    networks:
+      - swgemu_net
+    depends_on:
+      db:
+        condition: service_healthy
+    tty: true
+    stdin_open: true
+
+  pythonbot:
+    build:
+      context: ./pythonregisterbot
+      dockerfile: registerbot.Dockerfile
+    volumes:
+      - ./pythonregisterbot:/app
+    networks:
+      - swgemu_net
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mariadb:10.5
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=swgemu
+      - MYSQL_USER=swgemu
+      - MYSQL_PASSWORD=123456
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./am_containerdb.sql:/docker-entrypoint-initdb.d/01-am_containerdb.sql
+      - ./02-discord-support.sql:/docker-entrypoint-initdb.d/02-discord-support.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - swgemu_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "swgemu", "--password=123456"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  swgemu_net:
+    driver: bridge
+
+volumes:
+  mariadb_data: 

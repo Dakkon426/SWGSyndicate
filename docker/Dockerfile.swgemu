@@ -1,0 +1,46 @@
+# SWGEmu Core3 Build Environment
+# Based on Ubuntu 16.04 (Xenial) to match required compiler versions
+FROM ubuntu:16.04
+
+# Prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+# Add LLVM repository for Clang 3.8
+RUN apt-get update && apt-get install -y wget software-properties-common && \
+    wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
+    apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-3.8 main" && \
+    apt-get update
+
+# Install basic build tools and dependencies
+RUN apt-get install -y \
+    build-essential \
+    cmake \
+    git \
+    ninja-build \
+    clang-3.8 \
+    lldb-3.8 \
+    liblua5.3-dev \
+    libmysqlclient-dev \
+    libdb-dev \
+    openjdk-8-jdk \
+    libssl-dev \
+    zlib1g-dev \
+    libboost-all-dev \
+    libpthread-stubs0-dev \
+    libjemalloc-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up build environment
+WORKDIR /build
+
+# Create a non-root user for security
+RUN useradd -m -s /bin/bash builder
+USER builder
+
+# Set default compiler to GCC 5.4 (can be overridden during build)
+ENV CC=gcc-5
+ENV CXX=g++-5
+
+# Default command (can be overridden by docker-compose)
+CMD ["/bin/bash"]
