@@ -1839,6 +1839,5 @@ schematics = {
 	{path="object/draft_schematic/structure/bespin_house_schem.iff"},
 	--new weapons
 	{path="object/draft_schematic/weapon/lance_staff_cryo.iff"},
-	{path="object/draft_schematic/weapon/lightsaber/lightsaber_polearm_s1.iff"},
 	{path="object/draft_schematic/weapon/carbine_geo.iff"},
 };
