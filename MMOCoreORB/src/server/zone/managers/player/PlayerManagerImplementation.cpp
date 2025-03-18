@@ -1432,22 +1432,30 @@ void PlayerManagerImplementation::sendActivateCloneRequest(CreatureObject* playe
 		if (cbot->getFacilityType() == CloningBuildingObjectTemplate::JEDI_ONLY && player->hasSkill("force_title_jedi_rank_01")) {
 			String name = "Force Shrine (" + String::valueOf((int)loc->getWorldPositionX()) + ", " + String::valueOf((int)loc->getWorldPositionY()) + ")";
 			cloneMenu->addMenuItem(name, loc->getObjectID());
-		} else if ((cbot->getFacilityType() == CloningBuildingObjectTemplate::LIGHT_JEDI_ONLY && player->hasSkill("force_rank_light_novice")) ||
-				(cbot->getFacilityType() == CloningBuildingObjectTemplate::DARK_JEDI_ONLY && player->hasSkill("force_rank_dark_novice"))) {
-			FrsManager* frsManager = server->getFrsManager();
-
-			if (frsManager != nullptr && frsManager->isFrsEnabled()) {
-				String name = "Jedi Enclave (" + String::valueOf((int)loc->getWorldPositionX()) + ", " + String::valueOf((int)loc->getWorldPositionY()) + ")";
-				cloneMenu->addMenuItem(name, loc->getObjectID());
+		} else if (cbot->getFacilityType() == CloningBuildingObjectTemplate::LIGHT_JEDI_ONLY) {
+			if (player->hasSkill("force_rank_light_novice")) {
+				FrsManager* frsManager = server->getFrsManager();
+				if (frsManager != nullptr && frsManager->isFrsEnabled()) {
+					String name = "Light Jedi Enclave (" + String::valueOf((int)loc->getWorldPositionX()) + ", " + String::valueOf((int)loc->getWorldPositionY()) + ")";
+					cloneMenu->addMenuItem(name, loc->getObjectID());
+				}
+			}
+		} else if (cbot->getFacilityType() == CloningBuildingObjectTemplate::DARK_JEDI_ONLY) {
+			if (player->hasSkill("force_rank_dark_novice")) {
+				FrsManager* frsManager = server->getFrsManager();
+				if (frsManager != nullptr && frsManager->isFrsEnabled()) {
+					String name = "Dark Jedi Enclave (" + String::valueOf((int)loc->getWorldPositionX()) + ", " + String::valueOf((int)loc->getWorldPositionY()) + ")";
+					cloneMenu->addMenuItem(name, loc->getObjectID());
+				}
 			}
 		} else if (cbot->getFacilityType() != CloningBuildingObjectTemplate::JEDI_ONLY){
 			String name = "None";
-			ManagedReference<CityRegion*> cr2 = loc->getCityRegion().get();
-			if (cr2 != nullptr)
-				name = cr2->getRegionDisplayedName();
-			else
-				name = loc->getDisplayedName();
-			cloneMenu->addMenuItem(name, loc->getObjectID());
+				ManagedReference<CityRegion*> cr2 = loc->getCityRegion().get();
+				if (cr2 != nullptr)
+					name = cr2->getRegionDisplayedName();
+				else
+					name = loc->getDisplayedName();
+				cloneMenu->addMenuItem(name, loc->getObjectID());
 		}
 	}
 

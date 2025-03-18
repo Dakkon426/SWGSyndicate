@@ -182,9 +182,9 @@ function Yavin4StaticSpawnsScreenPlay:respawnDarkSentinel(pOldSentinel, sentinel
 		spawnLoc = { 5074.2, 78.8, 313.9, 90 }
 	elseif (sentinelID == "2") then
 		spawnLoc = { 5074.3, 79.2, 306.4, 90 }
-	elseif (sentinelID == "5") then
+	elseif (sentinelID == "3") then
 		spawnLoc = { 5053.79, 67.9311, 434.323, 177 }
-	elseif (sentinelID == "6") then
+	elseif (sentinelID == "4") then
 		spawnLoc = { 5068.99, 67.4718, 434.442, 177 }
 	end
 
