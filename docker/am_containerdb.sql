@@ -116,19 +116,10 @@ CREATE TABLE  `swgemu`.`accounts` (
   `active` tinyint(1) NOT NULL DEFAULT '1',
   `admin_level` tinyint(1) NOT NULL DEFAULT '0',
   `salt` varchar(32) NOT NULL,
-  PRIMARY KEY (`account_id`) USING BTREE
+  `discord_user_id` bigint(20) unsigned DEFAULT NULL,
+  PRIMARY KEY (`account_id`) USING BTREE,
+  UNIQUE KEY `idx_discord_user_id` (`discord_user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
-
---
--- Dumping data for table `swgemu`.`accounts`
---
-
-/*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
-LOCK TABLES `accounts` WRITE;
-INSERT INTO `swgemu`.`accounts` (username, password, station_id, salt) VALUES  ('test','ac7cfed4dfcfc064eba54b6cff2c487b41ff8ebc1b866c36aca3dd6fed369cf1','2830519724','43d7bde4803fe96f8be19c3365441262'),
-('testadmin','185ed5696c241e23bf27316072a4e6c0286bd8e33665cae3f72c95584d4c4969','3142804590','f4ac1d27538e6382f131f5a7e7c50c97');
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
 
 
 --

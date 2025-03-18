@@ -44,9 +44,6 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
       - ./am_containerdb.sql:/docker-entrypoint-initdb.d/01-am_containerdb.sql
-      - ./02-discord-support.sql:/docker-entrypoint-initdb.d/02-discord-support.sql
-    ports:
-      - "3306:3306"
     networks:
       - swgemu_net
     healthcheck:
