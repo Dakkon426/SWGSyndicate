@@ -29,6 +29,7 @@ RUN apt-get install -y \
     libboost-all-dev \
     libpthread-stubs0-dev \
     libjemalloc-dev \
+    screen \
     && rm -rf /var/lib/apt/lists/*
 
 # Set up build environment
