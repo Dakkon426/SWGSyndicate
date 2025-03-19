@@ -443,7 +443,7 @@ bool FactoryObjectImplementation::startFactory() {
 
 	// Add sampletask
 	Reference<CreateFactoryObjectTask* > createFactoryObjectTask = new CreateFactoryObjectTask(_this.getReferenceUnsafeStaticCast());
-	addPendingTask("createFactoryObject", createFactoryObjectTask, timer * 1000);
+	addPendingTask("createFactoryObject", createFactoryObjectTask, timer);
 
 	operating = true;
 
