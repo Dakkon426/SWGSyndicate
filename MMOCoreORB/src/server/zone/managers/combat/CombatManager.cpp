@@ -2956,7 +2956,8 @@ void CombatManager::checkForTefs(CreatureObject* attacker, CreatureObject* defen
 	} 
 	// Check if player is attacking an NPC with a faction
 	else if (attackingCreature != nullptr && targetCreature != nullptr && attackingCreature->isPlayerCreature() 
-		&& targetCreature->getFaction() != 0 && targetCreature->getFaction() != attackingCreature->getFaction()) {
+		&& !targetCreature->isPlayerCreature() && targetCreature->getFaction() != 0 
+		&& targetCreature->getFaction() != attackingCreature->getFaction()) {
 		*shouldGcwTef = true;
 	}
 }
