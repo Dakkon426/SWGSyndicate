@@ -2917,30 +2917,47 @@ void CombatManager::initializeDefaultAttacks() {
 }
 
 void CombatManager::checkForTefs(CreatureObject* attacker, CreatureObject* defender, bool* shouldGcwTef, bool* shouldBhTef, bool* shouldJediTef) const {
+	// Early return if both main TEFs are already set
 	if (*shouldGcwTef && *shouldBhTef)
 		return;
 
+	// Get the actual players (handle pets and vehicles)
 	ManagedReference<CreatureObject*> attackingCreature = attacker->isPet() ? attacker->getLinkedCreature() : attacker;
 	ManagedReference<CreatureObject*> targetCreature = defender->isPet() || defender->isVehicleObject() ? defender->getLinkedCreature() : defender;
 
-	if (attackingCreature != nullptr && targetCreature != nullptr && attackingCreature->isPlayerCreature() && targetCreature->isPlayerCreature() && !areInDuel(attackingCreature, targetCreature)) {	
-	
+	// Check if both are valid player characters not in a duel
+	if (attackingCreature != nullptr && targetCreature != nullptr && attackingCreature->isPlayerCreature() && targetCreature->isPlayerCreature() 
+		&& !areInDuel(attackingCreature, targetCreature)) {	
+		
+		// // Check Jedi TEF conditions
+		// if (!(*shouldJediTef)) {
+		// 	if (targetCreature->getPlayerObject()->isJedi() && targetCreature->getWeapon()->isJediWeapon())
+		// 		*shouldJediTef = true;
+		// 	else if (attackingCreature->isPlayerCreature() && attackingCreature->getPlayerObject()->isJedi())
+		// 		*shouldJediTef = true;
+		// 	else if (targetCreature->getPlayerObject()->isJediAttackable() || targetCreature->getPlayerObject()->hasJediTef())
+		// 		*shouldJediTef = true;
+		// }
 
-		if (!(*shouldJediTef) && (targetCreature->getPlayerObject()->isJedi() && targetCreature->getWeapon()->isJediWeapon()))
-			*shouldJediTef = true;
+		// Check Bounty Hunter TEF
+		if (!(*shouldBhTef)) {
+			if (attackingCreature->hasBountyMissionFor(targetCreature) || targetCreature->hasBountyMissionFor(attackingCreature))
+				*shouldBhTef = true;
+		}
 
-		if (!(*shouldJediTef) && (attackingCreature->isPlayerCreature() && attackingCreature->getPlayerObject()->isJedi()))
-			*shouldJediTef = true;
-
-		if (!(*shouldJediTef) && (targetCreature->getPlayerObject()->isJediAttackable() || targetCreature->getPlayerObject()->hasJediTef()))
-			*shouldJediTef = true;
-
-		if (!(*shouldGcwTef) && (attackingCreature->getFaction() != targetCreature->getFaction()) && attackingCreature->getFaction() != 0 && targetCreature->getFaction() != 0)
-			*shouldGcwTef = true;
-
-		if (!(*shouldBhTef) && (attackingCreature->hasBountyMissionFor(targetCreature) || targetCreature->hasBountyMissionFor(attackingCreature)))
-			*shouldBhTef = true;
-	} else if (attackingCreature != nullptr && targetCreature != nullptr && attackingCreature->isPlayerCreature() && targetCreature->getFaction() != 0 && targetCreature->getFaction() != attackingCreature->getFaction()){
+		// Check GCW TEF - opposing factions and both have faction
+		if (!(*shouldGcwTef)) {
+			bool differentFactions = attackingCreature->getFaction() != targetCreature->getFaction();
+			bool bothHaveFaction = attackingCreature->getFaction() != 0 && targetCreature->getFaction() != 0;
+			
+			if (differentFactions && bothHaveFaction)
+				*shouldGcwTef = true;
+		}
+	} 
+	// Check if player is attacking an NPC with a faction
+	else if (attackingCreature != nullptr && targetCreature != nullptr && attackingCreature->isPlayerCreature() 
+		&& !targetCreature->isPlayerCreature() && targetCreature->getFaction() != 0 
+		&& targetCreature->getFaction() != attackingCreature->getFaction()) {
 		*shouldGcwTef = true;
 	}
 }

@@ -2363,6 +2363,9 @@ Time PlayerObjectImplementation::getLastJediAttackableTimestamp() {
 }
 
 void PlayerObjectImplementation::updateLastJediAttackableTimestamp() {
+	//Early return to avoid making jedi attackable
+	return;
+
 	lastJediAttackableTimestamp.updateToCurrentTime();
 	lastJediAttackableTimestamp.addMiliTime(60000);
 }
