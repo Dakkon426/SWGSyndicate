@@ -174,6 +174,29 @@ void SlicingSessionImplementation::handleMenuSelect(CreatureObject* pl, byte men
 
 	uint8 progress = getProgress();
 
+	// Check if this is the weapon slice choice menu
+	if (suiBox->getPromptTitle() == "Weapon Slice Options") {
+		if (menuID == 0 || menuID == 1) {
+			handleWeaponSlice(menuID);
+		} else {
+			// If the player cancels, mark the object as sliced but don't apply any mods
+			// This ensures they can't exploit the system for XP without actually slicing
+			if (tangibleObject->isWeaponObject()) {
+				WeaponObject* weap = cast<WeaponObject*>(tangibleObject.get());
+				Locker locker(weap);
+				
+				if (weap->hasPowerup())
+					this->detachPowerUp(player, weap);
+					
+				weap->setSliced(true);
+			}
+			// End the session on cancel
+			tangibleObject->notifyObservers(ObserverEventType::SLICED, player, 0);
+			endSlicing();
+		}
+		return;
+	}
+
 	if (progress == 0) {
 		switch(menuID) {
 		case 0: {
@@ -220,7 +243,6 @@ void SlicingSessionImplementation::handleMenuSelect(CreatureObject* pl, byte men
 	}
 
 	generateSliceMenu(suiBox);
-
 }
 
 void SlicingSessionImplementation::endSlicing() {
@@ -457,32 +479,79 @@ void SlicingSessionImplementation::handleSlice(SuiListBox* suiBox) {
 
 	PlayerManager* playerManager = player->getZoneServer()->getPlayerManager();
 
-	suiBox->removeAllMenuItems();
-	suiBox->setCancelButton(false,"@cancel");
-
-	StringBuffer prompt;
-	prompt << "@slicing/slicing:";
-	prompt << getPrefix(tangibleObject) + "examine";
-	suiBox->setPromptText(prompt.toString());
-
-	player->getPlayerObject()->addSuiBox(suiBox);
-	player->sendMessage(suiBox->generateMessage());
-
 	if (tangibleObject->isContainerObject() || tangibleObject->getGameObjectType() == SceneObjectType::PLAYERLOOTCRATE) {
+		// Add the examine message to the success window
+		suiBox->removeAllMenuItems();
+		suiBox->setCancelButton(false,"@cancel");
+
+		StringBuffer prompt;
+		prompt << "@slicing/slicing:";
+		prompt << getPrefix(tangibleObject) + "examine";
+		suiBox->setPromptText(prompt.toString());
+
+		player->getPlayerObject()->addSuiBox(suiBox);
+		player->sendMessage(suiBox->generateMessage());
+		
 		handleContainerSlice();
 		playerManager->awardExperience(player, "slicing", 250, true); // Container Slice XP
 	} else if (tangibleObject->isMissionTerminal()) {
+		// Add the examine message to the success window
+		suiBox->removeAllMenuItems();
+		suiBox->setCancelButton(false,"@cancel");
+
+		StringBuffer prompt;
+		prompt << "@slicing/slicing:";
+		prompt << getPrefix(tangibleObject) + "examine";
+		suiBox->setPromptText(prompt.toString());
+
+		player->getPlayerObject()->addSuiBox(suiBox);
+		player->sendMessage(suiBox->generateMessage());
+		
 		MissionTerminal* term = cast<MissionTerminal*>( tangibleObject.get());
 		playerManager->awardExperience(player, "slicing", 100, true); // Terminal Slice XP
 		term->addSlicer(player);
 		player->sendSystemMessage("@slicing/slicing:terminal_success");
 	} else if (tangibleObject->isWeaponObject()) {
-		handleWeaponSlice();
+		// For weapons, DO NOT show the original success window
+		// Instead, close the original window by removing it from the player
+		player->getPlayerObject()->removeSuiBoxType(SuiWindowType::SLICING_MENU);
+		
+		// Award XP for the successful slice before showing choice menu
 		playerManager->awardExperience(player, "slicing", 250, true); // Weapon Slice XP
+		
+		// Show choice menu without ending the session
+		showWeaponSliceMenu();
+		
+		// Don't end the session here - let handleWeaponSlice do that after the player selects the slice type
+		return;
 	} else if (tangibleObject->isArmorObject()) {
+		// Add the examine message to the success window
+		suiBox->removeAllMenuItems();
+		suiBox->setCancelButton(false,"@cancel");
+
+		StringBuffer prompt;
+		prompt << "@slicing/slicing:";
+		prompt << getPrefix(tangibleObject) + "examine";
+		suiBox->setPromptText(prompt.toString());
+
+		player->getPlayerObject()->addSuiBox(suiBox);
+		player->sendMessage(suiBox->generateMessage());
+		
 		handleArmorSlice();
 		playerManager->awardExperience(player, "slicing", 250, true); // Armor Slice XP
-	} else if ( isBaseSlice()){
+	} else if (isBaseSlice()){
+		// Add the examine message to the success window
+		suiBox->removeAllMenuItems();
+		suiBox->setCancelButton(false,"@cancel");
+
+		StringBuffer prompt;
+		prompt << "@slicing/slicing:";
+		prompt << getPrefix(tangibleObject) + "examine";
+		suiBox->setPromptText(prompt.toString());
+
+		player->getPlayerObject()->addSuiBox(suiBox);
+		player->sendMessage(suiBox->generateMessage());
+		
 		playerManager->awardExperience(player,"slicing", 1000, true); // Base slicing
 
 		Zone* zone = player->getZone();
@@ -495,16 +564,36 @@ void SlicingSessionImplementation::handleSlice(SuiListBox* suiBox) {
 				task->execute();
 			}
 		}
-
 	}
 
 	tangibleObject->notifyObservers(ObserverEventType::SLICED, player, 1);
 
 	endSlicing();
-
 }
 
-void SlicingSessionImplementation::handleWeaponSlice() {
+void SlicingSessionImplementation::showWeaponSliceMenu() {
+	ManagedReference<CreatureObject*> player = this->player.get();
+	ManagedReference<TangibleObject*> tangibleObject = this->tangibleObject.get();
+
+	if (player == nullptr || tangibleObject == nullptr || !tangibleObject->isWeaponObject())
+		return;
+
+	// Create SUI Menu for weapon slice choice
+	ManagedReference<SuiListBox*> choiceBox = new SuiListBox(player, SuiWindowType::SLICING_MENU, 2);
+	choiceBox->setCallback(new SlicingSessionSuiCallback(player->getZoneServer()));
+	choiceBox->setPromptTitle("Weapon Slice Options");
+	choiceBox->setPromptText("Select the type of modification you wish to make to this weapon:");
+	choiceBox->setUsingObject(tangibleObject);
+	choiceBox->setCancelButton(true, "@cancel");
+	
+	choiceBox->addMenuItem("Damage Modification", 0); // Damage modification
+	choiceBox->addMenuItem("Speed Modification", 1);  // Speed modification
+	
+	player->getPlayerObject()->addSuiBox(choiceBox);
+	player->sendMessage(choiceBox->generateMessage());
+}
+
+void SlicingSessionImplementation::handleWeaponSlice(int sliceType) {
 	ManagedReference<CreatureObject*> player = this->player.get();
 	ManagedReference<TangibleObject*> tangibleObject = this->tangibleObject.get();
 
@@ -529,19 +618,26 @@ void SlicingSessionImplementation::handleWeaponSlice() {
 		break;
 	default:
 		return;
-
 	}
 
 	uint8 percentage = System::random(max - min) + min;
 
-	switch(System::random(1)) {
+	switch(sliceType) {
 	case 0:
 		handleSliceDamage(percentage);
 		break;
 	case 1:
 		handleSliceSpeed(percentage);
 		break;
+	default:
+		// Default to damage if somehow an invalid option is passed
+		handleSliceDamage(percentage);
+		break;
 	}
+	
+	// End the slicing session
+	tangibleObject->notifyObservers(ObserverEventType::SLICED, player, 1);
+	endSlicing();
 }
 
 void SlicingSessionImplementation::detachPowerUp(CreatureObject* player, WeaponObject* weap) {

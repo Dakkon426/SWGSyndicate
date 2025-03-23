@@ -436,7 +436,7 @@ bool FactoryObjectImplementation::startFactory() {
 			return false;
 	}
 
-	timer = ((int)schematic->getComplexity());
+	timer = 1;  // static factory time
 
 	if(!populateSchematicBlueprint(schematic))
 		return false;
@@ -627,7 +627,7 @@ void FactoryObjectImplementation::createNewObject() {
 	Reference<Task*> pending = getPendingTask("createFactoryObject");
 
 	if (pending != nullptr)
-		pending->reschedule(timer * 1000);
+		pending->reschedule(timer * 1);
 	else
 		stopFactory("manf_error", "", "", -1);
 }
