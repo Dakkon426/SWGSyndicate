@@ -625,6 +625,7 @@ void DirectorManager::initializeLuaEngine(Lua* luaEngine) {
 	Luna<LuaSkill>::Register(luaEngine->getLuaState());
 	Luna<LuaSkillManager>::Register(luaEngine->getLuaState());
 	Luna<LuaContractCrate>::Register(luaEngine->getLuaState());
+	luaEngine->registerFunction("broadcastGalaxy", broadcastGalaxy);
 }
 
 int DirectorManager::loadScreenPlays(Lua* luaEngine) {
