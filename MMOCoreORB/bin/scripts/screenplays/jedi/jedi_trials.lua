@@ -495,7 +495,7 @@ end
 function JediTrials:completePadawanForTesting(pPlayer)
 	writeScreenPlayData(pPlayer, "PadawanTrials", "startedTrials", 1)
 	self:setTrialsCompleted(pPlayer, #padawanTrialQuests)
-	-- self:unlockJediPadawan(pPlayer, true)
+	self:unlockJediPadawan(pPlayer, true)
 end
 
 function JediTrials:completeKnightForTesting(pPlayer, councilType)
