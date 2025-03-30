@@ -54,9 +54,11 @@ public:
 			ManagedReference<CreatureObject*> targetCreature =
 					server->getZoneServer()->getObject(target).castTo<CreatureObject*>();
 
-			if (targetCreature == nullptr || !targetCreature->isCreature()) {
-				creature->sendSystemMessage("@trap/trap:sys_creatures_only");
-				return GENERALERROR;
+			if (targetCreature->isPlayerCreature()) {
+				if (!creature->hasBountyMissionFor(targetCreature) || !creature->hasSkill("combat_bountyhunter_master")) {
+					creature->sendSystemMessage("@trap/trap:sys_creatures_only");
+					return GENERALERROR;
+				}
 			}
 
 			if (!targetCreature->isAttackableBy(creature) || targetCreature->isPet()) {
