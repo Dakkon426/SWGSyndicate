@@ -1,7 +1,7 @@
 local ObjectManager = require("managers.object.object_manager")
 
 USEDHOLOCRON = "used_holocron"
-HOLOCRONCOOLDOWNTIME = 24 * 60 * 60 * 1000 -- 24 hours
+HOLOCRONCOOLDOWNTIME = 6 * 60 * 60 * 1000 -- 24 hours
 
 VillageJediManagerHolocron = ScreenPlay:new {}
 
@@ -15,8 +15,7 @@ function VillageJediManagerHolocron.canUseHolocron(pPlayer)
 		return false
 	end
 
-	--return PlayerObject(pGhost):isJedi() and CreatureObject(pPlayer):checkCooldownRecovery(USEDHOLOCRON)
-	return false
+	return PlayerObject(pGhost):isJedi() and CreatureObject(pPlayer):checkCooldownRecovery(USEDHOLOCRON)
 end
 
 -- Checks if the player can replenish the force or not.
