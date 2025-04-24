@@ -25,6 +25,12 @@ function GoToDathomir:onEnteredActiveArea(pPlayer)
 
 	QuestManager.completeQuest(pPlayer, QuestManager.quests.FS_VILLAGE_ELDER)
 	
+	-- Unlock the Force Sensitive branches (needed to properly register branch completion)
+	local fsBranches = VillageJediManagerCommon.forceSensitiveBranches
+	for i = 1, #fsBranches do
+		VillageJediManagerCommon.unlockBranch(pPlayer, fsBranches[i])
+	end
+	
 	-- Award all Force Sensitive skill boxes
 	local fsSkills = {
 		-- Combat Prowess Branch
@@ -115,12 +121,6 @@ function GoToDathomir:onEnteredActiveArea(pPlayer)
 		if not CreatureObject(pPlayer):hasSkill(fsSkills[i]) then
 			awardSkill(pPlayer, fsSkills[i])
 		end
-	end
-	
-	-- Unlock the Force Sensitive branches (needed to properly register branch completion)
-	local fsBranches = VillageJediManagerCommon.forceSensitiveBranches
-	for i = 1, #fsBranches do
-		VillageJediManagerCommon.unlockBranch(pPlayer, fsBranches[i])
 	end
 	
 	-- Set their progression to completed village
