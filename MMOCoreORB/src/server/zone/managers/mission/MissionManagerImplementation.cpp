@@ -765,23 +765,10 @@ void MissionManagerImplementation::randomizeGenericDestroyMission(CreatureObject
 
 	int diffDisplay = difficultyLevel + 7;
 
-	
 	if (player->isGrouped())
 		diffDisplay += player->getGroup()->getGroupLevel();
-	else {
-		PlayerObject* ghost = player->getPlayerObject();
-
-		if (ghost != nullptr) {
-			String level = ghost->getScreenPlayData("mission_level_choice", "levelChoice");
-			int levelChoice = Integer::valueOf(level);
-			if (levelChoice > 0)
-				diffDisplay += levelChoice;
-			else
-				diffDisplay += playerLevel;
-		} else {
-			diffDisplay += playerLevel;
-		}
-	}
+	else
+		diffDisplay += playerLevel;
 
 	String dir;
 	float dirChoice = 0.0f;
@@ -836,7 +823,24 @@ void MissionManagerImplementation::randomizeGenericDestroyMission(CreatureObject
 			direction = System::random(360);
 		}
 
-		startPos = player->getWorldCoordinate((float)distance, direction, false);
+		// Calculate position using absolute world coordinates instead of player-relative
+		// Get player's current position
+		float playerX = player->getWorldPositionX();
+		float playerY = player->getWorldPositionY();
+		
+		// Calculate target position using absolute direction angle
+		// Standard angle to coordinate conversion:
+		// 0/360 = North (positive Y)
+		// 90 = West (negative X)
+		// 180 = South (negative Y)
+		// 270 = East (positive X)
+		float angleRadians = direction * (M_PI / 180.0f);
+		float targetX = playerX - (distance * sin(angleRadians));
+		float targetY = playerY + (distance * cos(angleRadians));
+		
+		startPos.setX(targetX);
+		startPos.setY(targetY);
+		startPos.setZ(0); // Height will be determined later
 
 		if (zone->isWithinBoundaries(startPos)) {
 			float height = zone->getHeight(startPos.getX(), startPos.getY());
@@ -1835,8 +1839,19 @@ LairSpawn* MissionManagerImplementation::getRandomLairSpawn(CreatureObject* play
 	bool foundLair = false;
 	int counter = availableLairList->size();
 	int playerLevel = server->getPlayerManager()->calculatePlayerLevel(player);
-	if (player->isGrouped())
+	PlayerObject* ghost = player->getPlayerObject();
+	int levelChoice = 0;
+
+	if (ghost != nullptr) {
+		String level = ghost->getScreenPlayData("mission_level_choice", "levelChoice");
+		levelChoice = Integer::valueOf(level);
+	}
+
+	if (levelChoice != 0) {
+		playerLevel = levelChoice;
+	} else if (player->isGrouped()) {
 		playerLevel = player->getGroup()->getGroupLevel();
+	}
 
 	LairSpawn* lairSpawn = nullptr;
 
