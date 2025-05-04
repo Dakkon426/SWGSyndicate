@@ -54,6 +54,11 @@ public:
 			ManagedReference<CreatureObject*> targetCreature =
 					server->getZoneServer()->getObject(target).castTo<CreatureObject*>();
 
+			if (targetCreature == nullptr) {
+				creature->sendSystemMessage("Invalid target.");
+				return GENERALERROR;
+			}
+
 			if (targetCreature->isPlayerCreature()) {
 				if (!creature->hasBountyMissionFor(targetCreature) || !creature->hasSkill("combat_bountyhunter_master")) {
 					creature->sendSystemMessage("@trap/trap:sys_creatures_only");
