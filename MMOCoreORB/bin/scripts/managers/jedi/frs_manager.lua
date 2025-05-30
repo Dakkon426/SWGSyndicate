@@ -4,10 +4,10 @@ frsEnabled = 1
 lightEnclaveID = 8525417
 darkEnclaveID = 3435626
 
-petitionInterval = 604800000 -- 7 days
-votingInterval = 604800000 -- 7 days
-acceptanceInterval = 28800 -- 8 hours
-maintenanceInterval = 604800000 -- 7 days
+petitionInterval = 86400000 -- 1 day
+votingInterval = 86400000 -- 1 day
+acceptanceInterval = 86400000 -- 1 day
+maintenanceInterval = 86400000 -- 1 day
 
 requestDemotionDuration = 604800000 -- 7 days
 voteChallengeDuration = 604800000 -- 7 days

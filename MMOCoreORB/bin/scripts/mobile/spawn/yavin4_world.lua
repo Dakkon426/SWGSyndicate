@@ -811,15 +811,6 @@ yavin4_world = {
 			weighting = 3,
 			size = 25
 		},
-		{
-			lairTemplateName = "yavin4_acklay_neutral_none",
-			spawnLimit = -1,
-			minDifficulty = 108,
-			maxDifficulty = 157,
-			numberToSpawn = 0,
-			weighting = 5,
-			size = 25
-		},
 	}
 }
 

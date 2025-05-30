@@ -150,7 +150,8 @@ dathomir = {
 
 	planetTravelPoints = {
 		{name = "Trade Outpost", x = 618.89258, z = 6.039608, y = 3092.0142, interplanetaryTravelAllowed = 1, incomingTravelAllowed = 1},
-		{name = "Science Outpost", x = -49.021923, z = 18, y = -1584.7278, interplanetaryTravelAllowed = 1, incomingTravelAllowed = 1}
+		{name = "Science Outpost", x = -49.021923, z = 18, y = -1584.7278, interplanetaryTravelAllowed = 1, incomingTravelAllowed = 1},
+		{name = "Village Shuttleport", x = 5240, z = 78, y = -4069, interplanetaryTravelAllowed = 1, incomingTravelAllowed = 1}
 	},
 
 	badgeAreas = {
@@ -586,7 +587,9 @@ yavin4 = {
 	planetTravelPoints = {
 		{name = "Yavin IV Labor Outpost", x = -6921.6733, z = 73, y = -5726.5161, interplanetaryTravelAllowed = 1, incomingTravelAllowed = 1},
 		{name = "Yavin IV Mining Outpost", x = -267.23914, z = 35, y = 4896.3013, interplanetaryTravelAllowed = 1, incomingTravelAllowed = 1},
-		{name = "Yavin IV Imperial Outpost", x = 4054.1, z = 37, y = -6216.9, interplanetaryTravelAllowed = 1, incomingTravelAllowed = 0}
+		{name = "Yavin IV Imperial Outpost", x = 4054.1, z = 37, y = -6216.9, interplanetaryTravelAllowed = 1, incomingTravelAllowed = 0},
+		{name = "Light Jedi Shuttleport", x = -5654, z = 102, y = 4939, interplanetaryTravelAllowed = 0, incomingTravelAllowed = 1},
+		{name = "Dark Jedi Shuttleport", x = 5060, z = 71, y = 426, interplanetaryTravelAllowed = 0, incomingTravelAllowed = 1}
 	},
 
 	badgeAreas = {

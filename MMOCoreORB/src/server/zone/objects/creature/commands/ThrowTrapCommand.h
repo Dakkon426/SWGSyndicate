@@ -54,24 +54,9 @@ public:
 			ManagedReference<CreatureObject*> targetCreature =
 					server->getZoneServer()->getObject(target).castTo<CreatureObject*>();
 
-			if (targetCreature == nullptr) {
-				creature->sendSystemMessage("Invalid target.");
+			if (targetCreature == nullptr || !targetCreature->isCreature()) {
+				creature->sendSystemMessage("@trap/trap:sys_creatures_only");
 				return GENERALERROR;
-			}
-
-			if (targetCreature->isPlayerCreature()) {
-				if (!creature->hasBountyMissionFor(targetCreature) || !creature->hasSkill("combat_bountyhunter_master")) {
-					creature->sendSystemMessage("@trap/trap:sys_creatures_only");
-					return GENERALERROR;
-				}
-
-				// Check for webber trap immunity on player target
-				if (trap->getObjectName()->getStringID().contains("trap_webber")) {
-					if (!targetCreature->checkCooldownRecovery("webber_immunity")) {
-						creature->sendSystemMessage("Target is immune to webber traps at the moment.");
-						return GENERALERROR;
-					}
-				}
 			}
 
 			if (!targetCreature->isAttackableBy(creature) || targetCreature->isPet()) {
@@ -152,6 +137,7 @@ public:
 			int damage = 0;
 
 			if (hit) {
+
 				message.setStringId("trap/trap" , trapData->getSuccessMessage());
 
 				buff = new Buff(targetCreature, crc, trapData->getDuration(), BuffType::STATE);
@@ -176,10 +162,6 @@ public:
 
 				damage = System::random(trapData->getMaxDamage() - trapData->getMinDamage()) + trapData->getMinDamage();
 
-				// Add immunity cooldown for webber trap on player targets
-				if (targetCreature->isPlayerCreature() && trap->getObjectName()->getStringID().contains("trap_webber")) {
-					targetCreature->addCooldown("webber_immunity", 30000); // 30 second immunity
-				}
 			} else {
 				if(!trapData->getFailMessage().isEmpty()) {
 					message.setStringId("trap/trap" , trapData->getFailMessage());

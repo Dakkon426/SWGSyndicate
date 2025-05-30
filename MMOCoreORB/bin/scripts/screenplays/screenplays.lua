@@ -27,6 +27,10 @@ require("sui.custom.SuiProcessorPuzzle")
 require("sui.custom.SuiRadiationSensor")
 require("sui.custom.SuiReceiverPuzzle")
 
+-- Custom content
+includeFile("../custom_scripts/screenplays/screenplays.lua")
+--includeFile("../custom_scripts/screenplays/glowing.lua")
+
 includeFile("helperfuncs.lua")
 includeFile("playerTriggers.lua")
 
@@ -683,9 +687,3 @@ includeFile("merchants/vendor_conv_handler.lua")
 -- Server Event Automation
 includeFile("events/ServerEventAutomation.lua")
 
--- Custom mission direction and level choice
-includeFile("custom_content/tools/mission_direction_choice.lua")
-includeFile("custom_content/tools/mission_level_choice.lua")
-
--- Custom content
-includeFile("../custom_scripts/screenplays/screenplays.lua")

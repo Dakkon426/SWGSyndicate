@@ -79,7 +79,6 @@ void StructureDeedImplementation::fillAttributeList(AttributeListMessage* alm, C
 }
 
 void StructureDeedImplementation::updateCraftingValues(CraftingValues* values, bool firstUpdate){
-	// Triple the extraction rate for all harvesters
-	setExtractionRate(values->getCurrentValue("extractrate") * 3.0);
+	setExtractionRate(values->getCurrentValue("extractrate"));
 	setHopperSize(values->getCurrentValue("hoppersize"));
 }
