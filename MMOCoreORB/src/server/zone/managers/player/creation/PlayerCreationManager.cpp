@@ -328,8 +328,8 @@ bool PlayerCreationManager::createCharacter(ClientCreateCharacterCallback* callb
 
 	auto client = callback->getClient();
 
-	if (client->getCharacterCount(zoneServer.get()->getGalaxyID()) >= 8) {
-		ErrorMessage* errMsg = new ErrorMessage("Create Error", "You are limited to 8 characters per galaxy.", 0x0);
+	if (client->getCharacterCount(zoneServer.get()->getGalaxyID()) >= 4) {
+		ErrorMessage* errMsg = new ErrorMessage("Create Error", "You are limited to 4 characters per galaxy.", 0x0);
 		client->sendMessage(errMsg);
 
 		return false;
@@ -579,7 +579,7 @@ bool PlayerCreationManager::createCharacter(ClientCreateCharacterCallback* callb
 	box->setPromptText("You are limited to creating one character per 20 minutes. Attempting to create another character or deleting your character before the 20 minute timer expires will reset the timer.");
 	String playerName = playerCreature->getFirstName();
 	StringBuffer zBroadcast;
-	zBroadcast << "\\#00ace6" << playerName << " \\#ffb90f Has Joined Aftermath!";
+	zBroadcast << "\\#00ace6" << playerName << " \\#ffb90f Has Joined Syndicate!";
 	playerCreature->getZoneServer()->getChatManager()->broadcastGalaxy(NULL, zBroadcast.toString());
 
 	ghost->addSuiBox(box);

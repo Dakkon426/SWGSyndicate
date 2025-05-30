@@ -59,8 +59,6 @@ function Yavin4StaticSpawnsScreenPlay:spawnMobiles()
 	spawnMobile("yavin4", "stormtrooper", 360, -3196.7, 69.6, -3139.5, -100, 0)
 	spawnMobile("yavin4", "stormtrooper", 360, -3195.8, 69.8, -3130.7, -104, 0)
 
-	--LJ Shuttle
-	spawnSceneObject("yavin4", "object/building/player/city/shuttleport_corellia.iff", -5656, 102, 4925, 0, 0)
 	local pSentinel = spawnMobile("yavin4", "light_jedi_sentinel", 1, -5646.54, 100.005, 4948.13, 180, 0)
 	if (pSentinel ~= nil) then
 		writeData(SceneObject(pSentinel):getObjectID() .. ":sentinelID", 3)
@@ -73,8 +71,6 @@ function Yavin4StaticSpawnsScreenPlay:spawnMobiles()
 		createEvent(10, "Yavin4StaticSpawnsScreenPlay", "setupSentinel", pSentinel, "")
 	end
 	
-	--DJ Shuttle
-	spawnSceneObject("yavin4", "object/building/player/city/shuttleport_corellia.iff", 5061, 71, 412, 0, 0)
 	pSentinel = spawnMobile("yavin4", "dark_jedi_sentinel", 1, 5053.79, 67.9311, 434.323, 177, 0)
 	if (pSentinel ~= nil) then
 		writeData(SceneObject(pSentinel):getObjectID() .. ":sentinelID", 3)

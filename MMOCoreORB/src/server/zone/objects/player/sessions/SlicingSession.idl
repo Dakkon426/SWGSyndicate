@@ -127,11 +127,13 @@ class SlicingSession extends Facade {
 
 	private native void handleWeaponSlice(int sliceType);
 
+	private native void showArmorSliceMenu();
+
+	private native void handleArmorSlice(int sliceType);
+
 	private native void handleSliceDamage(byte percent);
 
 	private native void handleSliceSpeed(byte percent);
-
-	private native void handleArmorSlice();
 
 	private native void handleSliceEncumbrance(byte percent);
 

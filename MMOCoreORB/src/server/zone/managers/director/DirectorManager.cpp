@@ -493,6 +493,7 @@ void DirectorManager::initializeLuaEngine(Lua* luaEngine) {
 	luaEngine->setGlobalInt("TUNEDCRYSTAL", ObserverEventType::TUNEDCRYSTAL);
 	luaEngine->setGlobalInt("PROTOTYPECREATED", ObserverEventType::PROTOTYPECREATED);
 	luaEngine->setGlobalInt("SLICED", ObserverEventType::SLICED);
+	luaEngine->setGlobalInt("PERFORM_EMOTE", ObserverEventType::PERFORM_EMOTE);
 
 	luaEngine->setGlobalInt("UPRIGHT", CreaturePosture::UPRIGHT);
 	luaEngine->setGlobalInt("PRONE", CreaturePosture::PRONE);
@@ -625,6 +626,7 @@ void DirectorManager::initializeLuaEngine(Lua* luaEngine) {
 	Luna<LuaSkill>::Register(luaEngine->getLuaState());
 	Luna<LuaSkillManager>::Register(luaEngine->getLuaState());
 	Luna<LuaContractCrate>::Register(luaEngine->getLuaState());
+	luaEngine->registerFunction("broadcastGalaxy", broadcastGalaxy);
 }
 
 int DirectorManager::loadScreenPlays(Lua* luaEngine) {
@@ -3703,18 +3705,19 @@ int DirectorManager::getBadgeListByType(lua_State* L) {
 	return 1;
 }
 
-int DirectorManager::broadcastGalaxy(lua_State* L){
-	ZoneServer* zoneServer = ServerCore::getZoneServer();
-	ChatManager* chatManager = zoneServer->getChatManager();
+int DirectorManager::broadcastGalaxy(lua_State* L) {
+	if (checkArgumentCount(L, 2) == 1) {
+		instance()->error() << "incorrect number of arguments passed to DirectorManager::broadcastGalaxy";
+		ERROR_CODE = INCORRECT_ARGUMENTS;
+		return 0;
+	}
 
-	/*if (lua_islightuserdata(L, -1)) {
-		StringIdChatParameter* message = (StringIdChatParameter*)lua_touserdata(L, -1);
-		chatManager->broadcastGalaxy(message);
-	} else { */
-		String value = lua_tostring(L, -1);
-		chatManager->broadcastGalaxy(NULL, value);
+	String message = lua_tostring(L, -1);
+	String faction = lua_tostring(L, -2);
 
-	//}
+	ManagedReference<ChatManager*> chatManager = ServerCore::getZoneServer()->getChatManager();
+	chatManager->broadcastGalaxy(message, faction);
+
 	return 0;
 }
 

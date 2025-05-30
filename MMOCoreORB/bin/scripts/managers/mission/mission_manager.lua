@@ -73,7 +73,7 @@ enable_factional_entertainer_missions = "true"
 enable_same_account_bounty_missions = "false"
 
 
-playerBountyDebuffLength = 0-- Time before their bounty resets from the minimum amount
+playerBountyDebuffLength = 86400000 -- 24 hours (in milliseconds) before a killed Jedi's bounty resets from the minimum amount
 
 -- Destroy Mission Configuration
 -- Distance calculated as: 
@@ -91,3 +91,13 @@ destroyMissionBaseReward = 0
 destroyMissionDifficultyRewardFactor = 375
 destroyMissionRandomReward = 0
 destroyMissionDifficultyRandomReward = 15
+
+-- Define mission directory path
+missionDirectoryPath = "missions"
+
+-- Define mission levels
+missionLevels = {
+	easy = 10,
+	medium = 25,
+	hard = 50
+}

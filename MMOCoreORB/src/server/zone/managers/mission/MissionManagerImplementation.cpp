@@ -256,7 +256,7 @@ void MissionManagerImplementation::handleMissionAccept(MissionTerminal* missionT
 	}
 
 	//Limit to two missions (only one of them can be a bounty mission)
-	if (missionCount >= 2 || (hasBountyMission && mission->getTypeCRC() == MissionTypes::BOUNTY)) {
+	if (missionCount >= 4 || (hasBountyMission && mission->getTypeCRC() == MissionTypes::BOUNTY)) {
 		StringIdChatParameter stringId("mission/mission_generic", "too_many_missions");
 		player->sendSystemMessage(stringId);
 		return;
@@ -764,10 +764,20 @@ void MissionManagerImplementation::randomizeGenericDestroyMission(CreatureObject
 		difficulty = 4;
 
 	int diffDisplay = difficultyLevel + 7;
+
 	if (player->isGrouped())
 		diffDisplay += player->getGroup()->getGroupLevel();
 	else
 		diffDisplay += playerLevel;
+
+	String dir;
+	float dirChoice = 0.0f;
+	PlayerObject* ghost = player->getPlayerObject();
+	
+	if (ghost != nullptr) {
+		dir = ghost->getScreenPlayData("mission_direction_choice", "directionChoice");
+		dirChoice = Float::valueOf(dir);
+	}
 
 	String building = lairTemplateObject->getMissionBuilding(difficulty);
 
@@ -792,10 +802,45 @@ void MissionManagerImplementation::randomizeGenericDestroyMission(CreatureObject
 	int maximumNumberOfTries = 20;
 	while (!foundPosition && maximumNumberOfTries-- > 0) {
 		foundPosition = true;
-
+		
 		int distance = destroyMissionBaseDistance + destroyMissionDifficultyDistanceFactor * difficultyLevel;
 		distance += System::random(destroyMissionRandomDistance) + System::random(destroyMissionDifficultyRandomDistance * difficultyLevel);
-		startPos = player->getWorldCoordinate((float)distance, (float)System::random(360), false);
+		
+		// Use the dirChoice if it's set, otherwise use random direction
+		// Small variation for stability
+		float direction = 0.0f;
+		if (dirChoice != 0) {
+			int variation = System::random(3) - 1;
+			direction = dirChoice + variation;
+			
+			// Normalize to 0-360 range
+			if (direction < 0)
+				direction += 360;
+			else if (direction >= 360)
+					direction -= 360;
+		} else {
+			// Generate a random direction between 0-360 degrees
+			direction = System::random(360);
+		}
+
+		// Calculate position using absolute world coordinates instead of player-relative
+		// Get player's current position
+		float playerX = player->getWorldPositionX();
+		float playerY = player->getWorldPositionY();
+		
+		// Calculate target position using absolute direction angle
+		// Standard angle to coordinate conversion:
+		// 0/360 = North (positive Y)
+		// 90 = West (negative X)
+		// 180 = South (negative Y)
+		// 270 = East (positive X)
+		float angleRadians = direction * (M_PI / 180.0f);
+		float targetX = playerX - (distance * sin(angleRadians));
+		float targetY = playerY + (distance * cos(angleRadians));
+		
+		startPos.setX(targetX);
+		startPos.setY(targetY);
+		startPos.setZ(0); // Height will be determined later
 
 		if (zone->isWithinBoundaries(startPos)) {
 			float height = zone->getHeight(startPos.getX(), startPos.getY());
@@ -1794,8 +1839,19 @@ LairSpawn* MissionManagerImplementation::getRandomLairSpawn(CreatureObject* play
 	bool foundLair = false;
 	int counter = availableLairList->size();
 	int playerLevel = server->getPlayerManager()->calculatePlayerLevel(player);
-	if (player->isGrouped())
+	PlayerObject* ghost = player->getPlayerObject();
+	int levelChoice = 0;
+
+	if (ghost != nullptr) {
+		String level = ghost->getScreenPlayData("mission_level_choice", "levelChoice");
+		levelChoice = Integer::valueOf(level);
+	}
+
+	if (levelChoice != 0) {
+		playerLevel = levelChoice;
+	} else if (player->isGrouped()) {
 		playerLevel = player->getGroup()->getGroupLevel();
+	}
 
 	LairSpawn* lairSpawn = nullptr;
 

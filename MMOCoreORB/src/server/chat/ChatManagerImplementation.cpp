@@ -885,6 +885,9 @@ void ChatManagerImplementation::handleSocialInternalMessage(CreatureObject* send
 			}
 		}
 	}
+	
+	// Notify observers that an emote was performed
+	sender->notifyObservers(ObserverEventType::PERFORM_EMOTE, sender, emoteID);
 }
 
 void ChatManagerImplementation::sendRoomList(CreatureObject* player) {

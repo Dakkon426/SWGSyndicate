@@ -1155,6 +1155,9 @@ void ResourceSpawner::sendSampleResults(TransactionLog& trx, CreatureObject* pla
 		return;
 	}
 
+	// half units extracted
+	unitsExtracted = unitsExtracted / 2;
+
 	// Send message to player about unit extraction
 	StringIdChatParameter message("survey", "sample_located");
 	message.setTO(resname);

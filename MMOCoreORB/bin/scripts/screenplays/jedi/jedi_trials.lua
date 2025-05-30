@@ -132,7 +132,12 @@ function JediTrials:unlockJediPadawan(pPlayer, dontSendSui)
 
 	CreatureObject(pPlayer):playEffect("clienteffect/trap_electric_01.cef", "")
 	CreatureObject(pPlayer):playMusicMessage("sound/music_become_jedi.snd")
-	broadcastGalaxy("\\#00ff00IMPERIAL COMMUNICATION FROM THE REGIONAL GOVERNOR: Lord Vader has detected a vergence in the Force. Be on the lookout for any suspicious persons displaying unique or odd abilities. Lord Vader authorizes all citizens to use deadly force to eliminate this threat from the Empire.")
+	
+	local playerName = CreatureObject(pPlayer):getFirstName()
+	local planetName = SceneObject(pPlayer):getZoneName()
+	planetName = planetName:gsub("^%l", string.upper) -- Capitalize first letter of planet name
+	
+	broadcastGalaxy("\\#FF0000[Imperial Security Bureau]\\#FFFFFF: A disturbance in the Force has been detected. Intelligence reports identify \\#00FF00" .. playerName .. "\\#FFFFFF as a suspected Force user on " .. planetName .. ". All licensed bounty hunters are authorized to terminate with extreme prejudice.")
 
 	PlayerObject(pGhost):setJediState(2)
 
